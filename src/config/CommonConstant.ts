@@ -9,6 +9,8 @@ export const IMG_MAX_HEIGHT = 291
 export const emailRegex = /(\.[a-zA-Z]{2,})$/
 export const CREDENTIAL_CONTEXT_VALUE = 'https://www.w3.org/2018/credentials/v1'
 export const schemaVersionRegex = /^\d{1,5}(?:\.\d{1,5})?(?:\.\d{1,5})?$/
+// Matches the fixed version the backend assigns to W3C/JSON-LD schemas (ledger/src/schema/enum/schema.enum.ts)
+export const w3cSchemaVersion = 'draft/2020-12'
 export const proofPurpose = 'assertionMethod'
 export const limitedAttributesLength = 3
 export const itemPerPage = 10

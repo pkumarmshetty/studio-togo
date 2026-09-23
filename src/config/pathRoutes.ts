@@ -62,6 +62,8 @@ export const pathRoutes = {
       connections:
         '/verification/verify-credentials/schemas/cred-defs/connections',
       W3CConnections: '/verification/verify-credentials/schemas/connections',
+      bulkConnections:
+        '/verification/verify-credentials/schemas/cred-defs/connections/bulk',
 
       verify:
         '/verification/verify-credentials/schemas/cred-defs/connections/verification',

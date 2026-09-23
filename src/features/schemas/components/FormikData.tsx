@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { schemaVersionRegex, w3cSchemaVersion } from '@/config/CommonConstant'
 
 import ActionButtons from './ActionButtons'
 import { AddAttributeSVG } from '@/config/svgs/CreateSchema'
@@ -30,7 +31,6 @@ import ConfirmationModal from './ConfirmationModal'
 import RequiredAndDelete from './RequiredAndDelete'
 import { SchemaType } from '@/common/enums'
 import SchemaVersion from './SchemaVersion'
-import { schemaVersionRegex } from '@/config/CommonConstant'
 
 function FormikData({
   formData,
@@ -181,8 +181,10 @@ function FormikData({
                 )}
               </div>
             </div>
-            {type === SchemaType.INDY && (
+            {type === SchemaType.INDY ? (
               <SchemaVersion formikHandlers={formikHandlers} />
+            ) : (
+              <SchemaVersion readOnlyValue={w3cSchemaVersion} />
             )}
           </div>
           <p className="text-md mt-2 font-normal">

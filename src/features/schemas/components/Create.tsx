@@ -23,7 +23,11 @@ export interface IPopup {
   type: 'reset' | 'create'
 }
 
-const CreateSchema = (): React.JSX.Element => {
+const OrganizationSchemaForm = ({
+  orgId,
+}: {
+  orgId: string
+}): React.JSX.Element => {
   const [failure, setFailure] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [createLoader, setCreateLoader] = useState<boolean>(false)
@@ -34,8 +38,6 @@ const CreateSchema = (): React.JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false)
   const [schemaTypeValues, setSchemaTypeValues] = useState<SchemaTypeValue>()
   const [type, setType] = useState<SchemaType>()
-  const orgId = useAppSelector((state) => state.organization.orgId)
-
   const route = useRouter()
 
   const initFormData: IFormData = {
@@ -50,42 +52,61 @@ const CreateSchema = (): React.JSX.Element => {
       },
     ],
   }
-  const fetchOrganizationDetails = async (): Promise<void> => {
-    setLoading(true)
-    const response = await getOrganizationById(orgId as string)
-    const { data } = response as AxiosResponse
-
-    if (data?.statusCode === apiStatusCodes.API_STATUS_SUCCESS) {
-      const did = data?.data?.org_agents?.[0]?.orgDid
-      if (did) {
-        if (did.includes(DidMethod.INDY)) {
-          setSchemaTypeValues(SchemaTypeValue.INDY)
-          setType(SchemaType.INDY)
-        } else if (did.includes(DidMethod.POLYGON)) {
-          setType(SchemaType.W3C)
-          setSchemaTypeValues(SchemaTypeValue.POLYGON)
-        } else if (did.includes(DidMethod.KEY) || did.includes(DidMethod.WEB)) {
-          setType(SchemaType.W3C)
-          setSchemaTypeValues(SchemaTypeValue.NO_LEDGER)
-        }
-      }
-    } else {
-      setFailure(response as string)
-    }
-
-    setLoading(false)
-  }
-
   const [formData, setFormData] = useState(initFormData)
 
   useEffect(() => {
+    let active = true
+    const fetchOrganizationDetails = async (): Promise<void> => {
+      setLoading(true)
+      try {
+        const response = await getOrganizationById(orgId)
+        if (!active) {
+          return
+        }
+        if (typeof response === 'string') {
+          setFailure(response)
+          return
+        }
+        const did = response.data?.data?.org_agents?.[0]?.orgDid
+        if (did?.includes(DidMethod.INDY)) {
+          setSchemaTypeValues(SchemaTypeValue.INDY)
+          setType(SchemaType.INDY)
+        } else if (did?.includes(DidMethod.POLYGON)) {
+          setType(SchemaType.W3C)
+          setSchemaTypeValues(SchemaTypeValue.POLYGON)
+        } else if (
+          did?.includes(DidMethod.KEY) ||
+          did?.includes(DidMethod.WEB)
+        ) {
+          setType(SchemaType.W3C)
+          setSchemaTypeValues(SchemaTypeValue.NO_LEDGER)
+        } else {
+          setFailure(
+            'Create a DID for this organization before creating a schema.',
+          )
+        }
+      } catch {
+        if (active) {
+          setFailure('Unable to load organization details. Please try again.')
+        }
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
     fetchOrganizationDetails()
-  }, [])
+    return (): void => {
+      active = false
+    }
+  }, [orgId])
 
   const filledInputs = (formData: IFormData): boolean => {
     const { schemaName, schemaVersion, attribute } = formData
 
     if (
+      !type ||
+      loading ||
       (type === SchemaType.INDY && (!schemaName || !schemaVersion)) ||
       (type === SchemaType.W3C && !schemaName)
     ) {
@@ -253,6 +274,11 @@ const CreateSchema = (): React.JSX.Element => {
       </Card>
     </div>
   )
+}
+
+const CreateSchema = (): React.JSX.Element => {
+  const orgId = useAppSelector((state) => state.organization.orgId)
+  return orgId ? <OrganizationSchemaForm key={orgId} orgId={orgId} /> : <></>
 }
 
 export default CreateSchema

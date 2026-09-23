@@ -119,9 +119,14 @@ export default function Dashboard(): React.JSX.Element {
 
   useEffect(() => {
     getAllInvitations()
-    getAllEcosystemInvitations()
     getEcosystemEnableStatus()
   }, [])
+
+  useEffect(() => {
+    if (orgId) {
+      getAllEcosystemInvitations()
+    }
+  }, [orgId])
 
   const fetchOrganizationDetails = async (): Promise<void> => {
     if (!orgId) {

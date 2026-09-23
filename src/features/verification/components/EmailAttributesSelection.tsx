@@ -188,6 +188,11 @@ const EmailAttributesSelection = (): JSX.Element => {
     return false
   }
   const redirectToAppropriatePage = (): void => {
+    if (verificationRouteType === 'Bulk') {
+      router.push(pathRoutes.organizations.verification.bulkConnections)
+      return
+    }
+
     switch (true) {
       case w3cSchema && isConnectionProof:
         router.push(pathRoutes.organizations.verification.W3CConnections)

@@ -1,7 +1,9 @@
-import { axiosGet, axiosPost, ecosystemAxiosGet } from '@/services/apiRequests'
+import { axiosGet, axiosPost } from '@/services/apiRequests'
 
 import { AxiosResponse } from 'axios'
+import { EcosystemRoles } from '@/features/common/enum'
 import { apiRoutes } from '@/config/apiRoutes'
+import { getEcosystemMemberInvitations } from './ecosystem'
 import { getHeaderConfigs } from '@/config/GetHeaderConfigs'
 
 // Get all organization Inviattions
@@ -113,20 +115,10 @@ export const getUserEcosystemInvitations = async (
   pageSize: number,
   search: string,
   orgId: string,
-): Promise<AxiosResponse | string> => {
-  const url = `${apiRoutes.Ecosystem.root}/${orgId}${apiRoutes.Ecosystem.usersInvitation}?pageNumber=${pageNumber}&pageSize=${pageSize}&search=${search}`
-
-  const config = getHeaderConfigs()
-
-  const axiosPayload = {
-    url,
-    config,
-  }
-
-  try {
-    return await ecosystemAxiosGet(axiosPayload)
-  } catch (error) {
-    const err = error as Error
-    return err?.message
-  }
-}
+): Promise<AxiosResponse | string> =>
+  getEcosystemMemberInvitations(
+    orgId,
+    '',
+    { pageNumber: pageNumber - 1, pageSize, searchTerm: search },
+    EcosystemRoles.ECOSYSTEM_MEMBER,
+  )

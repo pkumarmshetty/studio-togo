@@ -64,7 +64,7 @@ const SelectionDashboardData = (): JSX.Element => {
       heading: 'Bulk',
       description:
         'Verify credential(s) in bulk by uploading .csv file records',
-      path: '',
+      path: pathRoutes.organizations.verification.schema,
     },
   ]
   return (

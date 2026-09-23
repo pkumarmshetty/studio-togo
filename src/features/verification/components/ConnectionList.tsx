@@ -207,12 +207,11 @@ const ConnectionList = (props: {
         setTotalItem(totalItems)
         setError(null)
       } else {
+        // No connections yet is a normal empty state, not an error - matches Connections.tsx behavior.
         setConnectionList([])
-        setError('Failed to fetch connections.')
       }
     } catch (error) {
       setConnectionList([])
-      setError((error as Error).message)
     }
   }
   useEffect(() => {
